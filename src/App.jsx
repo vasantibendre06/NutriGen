@@ -15,7 +15,7 @@ const App = () => {
 export const appRouter = createBrowserRouter([
   {
     path:"/",
-    element:<Login />setName("sdjddsdsd")
+    element:<Login />
   },
   {
     path:"/nutrigen",
