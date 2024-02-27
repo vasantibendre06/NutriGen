@@ -1,97 +1,190 @@
-import React, { useState } from "react";
-
+import React, { useRef, useState } from "react";
+import { Gender, HealthIssues, personType } from "../utils/constant";
+import { useSelector } from "react-redux";
+import { collection, addDoc } from "firebase/firestore";
+import { db2 } from "../utils/firebase";
+import { useNavigate } from "react-router-dom";
 const Profile = () => {
-  const [personType, setpersonType] = useState("");
+  const navigate = useNavigate();
+  const user = useSelector((store) => store.user);
+  const [selectedHealthIssues, setSelectedHealthIssues] = useState([]);
+  const firstName = useRef(null);
+  const lastName = useRef(null);
+  const height = useRef(null);
+  const familyMembers = useRef(null);
+  const weight = useRef(null);
+  const genderType = useRef(null);
+  const familyType = useRef(null);
+
+  const handleHealthIssueChange = (e) => {
+    const { value, checked } = e.target;
+    if (checked) {
+      setSelectedHealthIssues((prevSelected) => [...prevSelected, value]);
+    } else {
+      setSelectedHealthIssues((prevSelected) =>
+        prevSelected.filter((item) => item !== value)
+      );
+    }
+  };
+
+  const handleDatabase = () => {
+    if (firstName.current.value === "") {
+      alert("please complete your profile");
+    } else {
+      addDoc(collection(db2, "users"), {
+        firstName: firstName.current.value,
+        lastName: lastName.current.value,
+        userWeight: weight.current.value,
+        userHeight: height.current.value,
+        gender: genderType.current.value,
+        issues: selectedHealthIssues,
+        email: user.email,
+      });
+      alert("data successfully added");
+      navigate("/nutrigen/app");
+    }
+  };
+
   return (
-    <div className="flex items-center justify-center h-[100vh] w-[60%] mx-auto ">
-      <form onSubmit={(e) => e.preventDefault()} action="">
-        <h1 className="text-center">To Complete Your Profile </h1>
-        <div className="mt-4">
-          <label htmlFor="">Full Name</label>
-          <input
-            className="block mt-2 outline-none px-2 rounded-md bg-gray-300 w-full py-1 "
-            type="text"
-          />
+    <>
+      <div className="flex items-center font-poppins justify-center min-h-[100vh] h-auto w-full">
+        <div className=" w-[30rem] px-5 py-5">
+          <h1 className="text-center capitalize text-2xl font-bold">
+            please complete your profile
+          </h1>
+          <form className="mt-5" onSubmit={(e) => e.preventDefault()} action="">
+            <div>
+              <label className="font-bold" htmlFor="">
+                First Name
+              </label>
+              <input
+                ref={firstName}
+                className="block bg-gray-300 rounded-md w-full mt-2 px-2 py-2 outline-none"
+                type="text"
+                placeholder="first Name"
+              />
+            </div>
+            <div className="mt-3">
+              <label className="font-bold" htmlFor="">
+                Last Name
+              </label>
+              <input
+                ref={lastName}
+                className="block bg-gray-300 rounded-md  mt-2 w-full px-2 py-2 outline-none"
+                type="text"
+                placeholder="last Name"
+              />
+            </div>
+            <div className="mt-3">
+              <label className="font-bold" htmlFor="">
+                E-mail
+              </label>
+              <input
+                className="block bg-gray-300 rounded-md  mt-2 w-full px-2 py-2"
+                type="email"
+                readOnly
+                placeholder={user === null ? "NA" : user.email}
+              />
+            </div>
+            <div>
+              <label className="font-bold" htmlFor="">
+                Height
+              </label>
+              <input
+                ref={height}
+                className="block bg-gray-300 rounded-md  mt-2 w-full px-2 py-1"
+                type="number"
+                placeholder="Height in CM"
+              />
+            </div>
+            <div className="mt-3">
+              <label className="font-bold" htmlFor="">
+                Weight
+              </label>
+              <input
+                ref={weight}
+                className="block bg-gray-300 rounded-md  mt-2 w-full px-2 py-1"
+                type="number"
+                placeholder="Weight in Kg"
+              />
+            </div>
+            <div className="mt-3">
+              <label className="font-bold" htmlFor="">
+                Gender
+              </label>
+              <select
+                ref={genderType}
+                className="w-full bg-gray-300 rounded-md  py-2 px-2 mt-2 outline-none "
+                name="gender"
+              >
+                {Gender.map((items) => {
+                  return (
+                    <option key={items.id} value={items.genderType}>
+                      {items.genderType}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            <div className="mt-3">
+              <label className="font-bold" htmlFor="">
+                Do you have any health Issues ?
+              </label>
+              {HealthIssues.map((items) => {
+                return (
+                  <div key={items.id}>
+                    <input
+                      value={items.issue}
+                      onChange={handleHealthIssueChange}
+                      type="checkbox"
+                      name={items.issue}
+                    />
+                    <label className="ml-2">{items.issue}</label>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-3">
+              <label className="font-bold" htmlFor="">
+                Family Type
+              </label>
+              <select
+                ref={familyType}
+                className="w-full bg-gray-300 rounded-md  py-2 px-2 mt-2 outline-none "
+                name="gender"
+              >
+                {personType.map((items) => {
+                  return (
+                    <option key={items.id} value={items.personType}>
+                      {items.personType}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            {familyType.current && familyType.current.value === "Family" && (
+              <div className="mt-3">
+                <label className="font-bold" htmlFor="">
+                  How Many Members ?{" "}
+                </label>
+                <input
+                  ref={familyMembers}
+                  className="block bg-gray-300 rounded-md  mt-2 w-full px-2 py-1"
+                  type="number"
+                  placeholder="Members"
+                />
+              </div>
+            )}
+            <button
+              onClick={handleDatabase}
+              className="mt-4 ml-2 border w-[20%] bg-purple-500 rounded-md  text-white cursor-pointer px-2 py-1"
+            >
+              Submit
+            </button>
+          </form>
         </div>
-        <div className="mt-2">
-          <label htmlFor="">Age</label>
-          <input
-            className="block outline-none px-2 rounded-md bg-gray-300 w-full py-1 mt-2"
-            type="text"
-          />
-        </div>
-        <div className="mt-2">
-          <label htmlFor="">Weight</label>
-          <input
-            className="block bg-gray-300 outline-none  w-full rounded-md py-1 mt-2"
-            type="text"
-          />
-        </div>
-        <div className="mt-2">
-          <label htmlFor="">height</label>
-          <input
-            className="block bg-gray-300 outline-none  w-full rounded-md py-1 mt-2"
-            type="text"
-          />
-        </div>
-        <div className="mt-2">
-          <label>Gender : </label>
-          <select className="w-full rounded-md py-2 px-2 mt-2" name="" id="">
-            <option value="">Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-        </div>
-        <div className="mt-2">
-          <label htmlFor="">Person Type</label>
-          <select
-            onChange={(e) => setpersonType(e.currentTarget.value)}
-            className="w-full py-2 px-2 mt-2"
-            name=""
-            id=""
-          >
-            <option value="">Chooose the value</option>
-            <option value="Family">Family</option>
-            <option value="Individual">Individual</option>
-          </select>
-        </div>
-        <div className="mt-4">
-          <label className="font-bold" htmlFor="">
-            Do you have any Health Issues
-          </label>
-          <div>
-            <input type="checkbox" /> Thyroid
-          </div>
-          <div>
-            <input type="checkbox" /> Blood Pressure
-          </div>
-          <div>
-            <input type="checkbox" /> Diabetes
-          </div>
-        </div>
-        {personType === "Family" && (
-          <div
-            className="
-       mt-4"
-          >
-            <label htmlFor="">How Many Members</label>
-            <input
-              className="block w-full bg-gray-300 py-2 px-2 mt-2 outline-none"
-              type="number"
-              placeholder="enter your family member"
-            />
-          </div>
-        )}
-        {personType === "Family" && (
-          <button className="border bg-purple-400 text-white py-2 mt-2 rounded-md px-2 w-full">
-            Add person details
-          </button>
-        )}
-        {personType === "Individual" && (
-          <button className="border bg-purple-400 text-white py-2 mt-2 rounded-md px-2 w-full">Submit your details</button>
-        )}
-      </form>
-    </div>
+      </div>
+    </>
   );
 };
 

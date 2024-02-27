@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../utils/firebase";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser, removeUser } from "../utils/userSlice";
 import Header from "./Header";
-import FoodApp from "./FoodApp";
+import Profile from "./Profile";
 
 const Body = () => {
   const navigate = useNavigate();
@@ -31,12 +31,10 @@ const Body = () => {
     });
   }, []);
 
-
-
   return (
     <div>
       <Header />
-      <FoodApp />
+      <Outlet />
     </div>
   );
 };

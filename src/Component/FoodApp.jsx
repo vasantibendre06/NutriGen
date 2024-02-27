@@ -1,15 +1,14 @@
 import React from "react";
 import { db } from "../utils/firebase";
-import { ref, onValue, child } from "firebase/database";
+import { get, ref } from "firebase/database";
 
 const FoodApp = () => {
-  const handleDB = async () => {
-    const dbRef = ref(db, "recipies");
-    onValue(dbRef, (snapshot) => {
-      const data = snapshot.val();
-      console.log(data);
+  const handleDB = () => {
+    get(ref(db)).then((snapshot) => {
+      console.log(snapshot.val());
     });
   };
+
   return (
     <>
       <div className="flex items-center justify-center h-[30vh]">
@@ -29,13 +28,17 @@ const FoodApp = () => {
       </div>
       <div className="flex justify-center px-5 py-5">
         <div className="left bg-orange-300 w-[350px] h-[50vh]">
-            <div className="flex items-center space-x-3">
-                <img className="w-[40px] h-[40px] rounded-full  " src="https://cdn.britannica.com/36/123536-050-95CB0C6E/Variety-fruits-vegetables.jpg?w=400&h=300&c=crop" alt="" />
-                <div>
-                    <h1>Hello image</h1>
-                    <h2>by Vasanti Beadre</h2>
-                </div>
+          <div className="flex items-center space-x-3">
+            <img
+              className="w-[40px] h-[40px] rounded-full  "
+              src="https://cdn.britannica.com/36/123536-050-95CB0C6E/Variety-fruits-vegetables.jpg?w=400&h=300&c=crop"
+              alt=""
+            />
+            <div>
+              <h1>Hello image</h1>
+              <h2>by Vasanti Beadre</h2>
             </div>
+          </div>
         </div>
         <div className="right bg-black w-[350px] h-[50vh]  "></div>
       </div>
