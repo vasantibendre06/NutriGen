@@ -1,14 +1,17 @@
 import React from "react";
 import { db } from "../utils/firebase";
 import { get, ref } from "firebase/database";
+import { useDispatch, useSelector } from "react-redux";
+import { addData } from "../utils/RecipieSlice";
 
 const FoodApp = () => {
+  const dispatch = useDispatch();
+  const data = useSelector((store) => store.recipie.recipieData);
   const handleDB = () => {
     get(ref(db)).then((snapshot) => {
-      console.log(snapshot.val());
+      dispatch(addData(snapshot.val()));
     });
   };
-
   return (
     <>
       <div className="flex items-center justify-center h-[30vh]">
