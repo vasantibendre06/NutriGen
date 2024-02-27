@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Login from './Component/Login'
 import Body from './Component/Body'
 import { Outlet, createBrowserRouter } from 'react-router-dom'
+import Profile from './Component/Profile'
 
 const App = () => {
   const [name, setName] = useState("Abhishek")
@@ -19,7 +20,11 @@ export const appRouter = createBrowserRouter([
   },
   {
     path:"/nutrigen",
-    element:<Body />
+    element:<Body />,
+  },
+  {
+    path:"/compeleteProfile",
+    element:<Profile />
   }
 ])
 
